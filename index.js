@@ -36,13 +36,14 @@ require("./dbConn/dbConn");
 app.use(express.json());
 app.use(cors());
 
+// APIS for folder size getting
 app.get("/api/user/folder/size", async (req, res) => {
   try {
     const folderInfo = fs.statSync("./uploads/Mattheewjames/newf");
 
-    const fileSizeMegaByte = folderInfo.size / 1000000;
-    console.log(fileSizeMegaByte);
-    return res.status(200).json(fileSizeMegaByte);
+    const folderSize = folderInfo.size / 1000000;
+    console.log(folderSize);
+    return res.status(200).json(folderSize);
   } catch (err) {
     return res.status(500).json(err);
   }
