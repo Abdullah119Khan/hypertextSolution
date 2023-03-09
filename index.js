@@ -11,6 +11,7 @@ const ImageModel = require("./models/title.model");
 const TitleModel = require("./models/Titles.model");
 const UserModel = require("./models/user.model");
 
+// Upload image with username and user directory
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const username = req.params.username;
