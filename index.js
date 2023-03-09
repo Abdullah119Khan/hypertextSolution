@@ -23,7 +23,11 @@ var storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-var upload = multer({ storage: storage }).single("image");
+const maxSize = 1 * 1024 * 1024;
+var upload = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+}).single("image");
 
 dotenv.config({ path: "./config/config.env" });
 require("./dbConn/dbConn");
@@ -35,7 +39,7 @@ app.use(cors());
 app.post("/api/user/file/:username/:title", verifyToken, (req, res, next) => {
   upload(req, res, (err) => {
     if (err) {
-      console.log(err);
+      return res.status(400).json(`We only accept 1MB image`);
     } else {
       const image = new TitleModel({
         image: {
