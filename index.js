@@ -23,7 +23,8 @@ var storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-const maxSize = 1 * 1024 * 1024;
+
+const maxSize = 20 * 1024 * 1024;
 var upload = multer({
   storage: storage,
   limits: { fileSize: maxSize },
@@ -34,6 +35,18 @@ require("./dbConn/dbConn");
 
 app.use(express.json());
 app.use(cors());
+
+app.get("/api/user/folder/size", async (req, res) => {
+  try {
+    const folderInfo = fs.statSync("./uploads/Mattheewjames/newf");
+
+    const fileSizeMegaByte = folderInfo.size / 1000000;
+    console.log(fileSizeMegaByte);
+    return res.status(200).json(fileSizeMegaByte);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
 
 // APIS for image upload
 app.post("/api/user/file/:username/:title", verifyToken, (req, res, next) => {
