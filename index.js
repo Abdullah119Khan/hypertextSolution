@@ -39,7 +39,7 @@ app.use(cors());
 app.post("/api/user/file/:username/:title", verifyToken, (req, res, next) => {
   upload(req, res, (err) => {
     if (err) {
-      return res.status(400).json(`We only accept 1MB image`);
+      return res.status(400).json(`only accepted 1MB image`);
     } else {
       const image = new TitleModel({
         image: {
