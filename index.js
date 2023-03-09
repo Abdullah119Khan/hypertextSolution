@@ -4,6 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const multer = require("multer");
+const path = require("path");
 const userRoutes = require("./routes/user.routes");
 const { verifyTokenUser, verifyToken } = require("./utils/auth");
 const ImageModel = require("./models/title.model");
@@ -12,7 +13,10 @@ const UserModel = require("./models/user.model");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/first/tryagain");
+    const username = req.params.username;
+    const title = req.params.title;
+    const uploadPath = path.join(__dirname, `uploads/${username}/${title}`);
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -27,7 +31,7 @@ app.use(express.json());
 app.use(cors());
 
 // APIS for image upload
-app.post("/api/user/file", verifyToken, (req, res, next) => {
+app.post("/api/user/file/:username/:title", verifyToken, (req, res, next) => {
   upload(req, res, (err) => {
     if (err) {
       console.log(err);
