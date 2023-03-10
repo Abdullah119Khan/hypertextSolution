@@ -24,7 +24,7 @@ var storage = multer.diskStorage({
   },
 });
 
-const maxSize = 200 * 1024 * 1024;
+const maxSize = 10 * 1024 * 1024;
 var upload = multer({
   storage: storage,
   limits: { fileSize: maxSize },
@@ -53,9 +53,13 @@ app.put(
 
       const folderSize = stats.size;
       if (folderSize < maxFolderSize) {
-        return res.status(403).json(`You have space here upload`);
+        return res
+          .status(403)
+          .json(`You have space here to upload image || file`);
       } else {
-        return res.status(200).json(`You Don't have space here`);
+        return res
+          .status(200)
+          .json(`You Don't have space here to upload image || file`);
       }
     });
   }
@@ -65,7 +69,7 @@ app.put(
 app.post("/api/user/file/:username/:title", verifyToken, (req, res, next) => {
   upload(req, res, (err) => {
     if (err) {
-      return res.status(400).json(`only accepted 1MB image`);
+      return res.status(400).json(`only accepted 10MB image`);
     } else {
       const image = new TitleModel({
         image: {
