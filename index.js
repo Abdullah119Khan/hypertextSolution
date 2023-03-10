@@ -24,7 +24,7 @@ var storage = multer.diskStorage({
   },
 });
 
-const maxSize = 20 * 1024 * 1024;
+const maxSize = 200 * 1024 * 1024;
 var upload = multer({
   storage: storage,
   limits: { fileSize: maxSize },
@@ -37,17 +37,29 @@ app.use(express.json());
 app.use(cors());
 
 // APIS for folder size getting
-app.get("/api/user/folder/size", async (req, res) => {
-  try {
-    const folderInfo = fs.statSync("./uploads/Mattheewjames/newf");
+app.put(
+  "/api/user/folder/size/:username/:title",
+  verifyToken,
+  async (req, res) => {
+    const username = req.params.username;
+    const title = req.params.title;
 
-    const folderSize = folderInfo.size / 1000000;
-    console.log(folderSize);
-    return res.status(200).json(folderSize);
-  } catch (err) {
-    return res.status(500).json(err);
+    const folderPath = `uploads/${username}/${title}`;
+    const maxFolderSize = 1024 * 1024 * 10;
+    fs.stat(folderPath, (err, stats) => {
+      if (err) {
+        return res.status(401).json(err);
+      }
+
+      const folderSize = stats.size;
+      if (folderSize < maxFolderSize) {
+        return res.status(403).json(`You have space here upload`);
+      } else {
+        return res.status(200).json(`You Don't have space here`);
+      }
+    });
   }
-});
+);
 
 // APIS for image upload
 app.post("/api/user/file/:username/:title", verifyToken, (req, res, next) => {
@@ -122,6 +134,16 @@ app.get("/api/user/getfolder", async (req, res) => {
   try {
     const getFolder = await TitleModel.find();
     return res.status(200).json(getFolder);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+// APIS for get all title
+app.get("/api/user/getTitle", async (req, res) => {
+  try {
+    const getAllTitle = await TitleModel.find();
+    return res.status(200).json(getAllTitle);
   } catch (err) {
     return res.status(500).json(err);
   }
